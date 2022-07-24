@@ -9,6 +9,7 @@ async def handle_callback(request):
     payload = await request.json()
 
     if "hostname" in payload:
+        payload["user"] = "user"
         await execute_callback(payload["hostname"], payload)
     else:
         raise aiohttp.web.HTTPBadRequest()
