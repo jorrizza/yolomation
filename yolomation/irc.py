@@ -13,7 +13,7 @@ class YoloMationBot:
     async def run(self):
         self.scheduler = await aiojobs.create_scheduler()
         async def init():
-            await self.bot.connect("localhost", 6667)
+            await self.bot.connect("irc.oftc.net", 6697)
             await self.bot.register("yolomation")
             await self.bot.join("#yolocation")
             # More code here (optional)...
