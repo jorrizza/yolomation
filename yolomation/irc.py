@@ -28,9 +28,10 @@ class YoloMationBot:
 
         # Message was sent in a channel.
         if message.startswith("yolomation:"):
-            await self.scheduler.spawn(self.acknowledge(sender))
+            await self.scheduler.spawn(self.acknowledge(sender, channel))
 
-    async def acknowledge(self, sender):
+    async def acknowledge(self, sender, channel):
+        self.bot.privmsg(channel, f"{sender}: Doing it. YOLO. I sneakily queried you with instructions.")
         self.bot.privmsg(sender, "Making a VM for you. Drink more water while you're waiting.")
         instance = await vm.create()
         self.bot.privmsg(sender, f"Done! Details: {instance}")
