@@ -33,7 +33,7 @@ class YoloMationBot:
     async def acknowledge(self, sender, channel):
         self.bot.privmsg(channel, f"{sender}: Doing it. YOLO. I sneakily queried you with instructions.")
         self.bot.privmsg(sender, "Making a VM for you. Drink more water while you're waiting.")
-        instance = await vm.create()
+        instance = await vm.create(sender)
         self.bot.privmsg(sender, f"Done! Details:")
         for k, v in instance.items():
             self.bot.privmsg(sender, f"{k}: {v}")

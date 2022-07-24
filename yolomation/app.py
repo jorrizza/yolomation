@@ -10,11 +10,11 @@ async def handle_callback(request):
 
     if "hostname" in payload:
         payload["user"] = "user"
-        await execute_callback(payload["hostname"], payload)
+        irc_sender = await execute_callback(payload["hostname"], payload)
     else:
         raise aiohttp.web.HTTPBadRequest()
     
-    return web.Response()
+    return web.Response(text=irc_sender)
 
 async def server():
     scheduler = await aiojobs.create_scheduler()

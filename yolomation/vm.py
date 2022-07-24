@@ -12,9 +12,10 @@ callbacks_lock = asyncio.Lock()
 callbacks = {}
 
 class Callback:
-    def __init__(self):
+    def __init__(self, irc_sender):
         self.event = asyncio.Event()
         self.value = None
+        self.irc_sender = irc_sender
 
         
 def random_name():
@@ -23,10 +24,10 @@ def random_name():
     return random.choice(profanity) + "-" + "-".join(pattern.sub('', w).lower() for w in random.sample(words, 3))
 
 
-async def create():
+async def create(irc_sender):
     name = random_name()
     await api_create_vm(name)
-    event = await add_callback(name)
+    event = await add_callback(name, irc_sender)
     await event.wait()
     async with callbacks_lock:
         value = callbacks[name].value
@@ -34,9 +35,9 @@ async def create():
     return value
 
 
-async def add_callback(name):
+async def add_callback(name, irc_sender):
     async with callbacks_lock:
-        callbacks[name] = Callback()
+        callbacks[name] = Callback(irc_sender)
         return callbacks[name].event
         
 
@@ -47,6 +48,7 @@ async def execute_callback(name, value):
         
         callbacks[name].value = value
         callbacks[name].event.set()
+        return callbacks[name].irc_sender
 
         
 async def api_create_vm(name):
