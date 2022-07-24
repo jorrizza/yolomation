@@ -3,17 +3,18 @@ import aiojobs
 from aiojobs.aiohttp import atomic, setup
 from .irc import YoloMationBot
 from .vm import execute_callback
+import logging
 
 @atomic
 async def handle_callback(request):
     payload = await request.json()
 
     if "hostname" in payload:
-        payload["user"] = "user"
         irc_sender = await execute_callback(payload["hostname"], payload)
     else:
         raise aiohttp.web.HTTPBadRequest()
     
+    logging.info(f"Responding callback for IRC user {irc_sender}")
     return web.Response(text=irc_sender)
 
 async def server():
