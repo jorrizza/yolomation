@@ -56,12 +56,20 @@ async def api_create_vm(name):
     auth = aiohttp.BasicAuth(username, password)
     async with aiohttp.ClientSession() as session:
         session_id = None
+        template = None
         async with session.post('https://vcenter.yolocation.lan/rest/com/vmware/cis/session', auth=auth, verify_ssl=False) as resp:
             payload = await resp.json()
             if "value" in payload:
                 session_id = payload["value"]
             else:
                 logging.warning("no session")
+                return
+        async with session.get('https://vcenter.yolocation.lan/rest/com/vmware/content/library/item?library_id=3e3b8097-1f88-4a95-ac5a-87289211d6d5', headers={"vmware-api-session-id": session_id}, verify_ssl=False) as resp:
+            payload = await resp.json()
+            if "value" in payload:
+                template = payload["value"][0]
+            else:
+                logging.warning("no template")
                 return
         payload = {
             "description": "",
@@ -91,7 +99,7 @@ async def api_create_vm(name):
             }
         }
         async with session.post(
-                "https://vcenter.yolocation.lan/api/vcenter/vm-template/library-items/0b16fa48-7cd6-47c9-90e2-9dd94dbd7612?action=deploy",
+                f"https://vcenter.yolocation.lan/api/vcenter/vm-template/library-items/{template}?action=deploy",
                 json=payload,
                 verify_ssl=False,
                 headers={"vmware-api-session-id": session_id}
