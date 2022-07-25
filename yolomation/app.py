@@ -17,6 +17,9 @@ async def handle_callback(request):
     logging.info(f"Responding callback for IRC user {irc_sender}")
     return web.Response(text=irc_sender)
 
+async def show_irc(request):
+    raise web.HTTPFound(location="https://webchat.oftc.net/?randomnick=1&channels=yolocation&uio=MT11bmRlZmluZWQb1")
+
 async def server():
     scheduler = await aiojobs.create_scheduler()
     
@@ -24,7 +27,10 @@ async def server():
     await scheduler.spawn(bot.run())
     
     wa = web.Application()
-    wa.add_routes([web.post('/', handle_callback)])
+    wa.add_routes([
+        web.post('/', handle_callback),
+        web.get('/', show_irc),
+    ])
     wa.on_shutdown.append(scheduler.close)
 
     setup(wa)
